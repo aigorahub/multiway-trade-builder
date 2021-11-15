@@ -1,0 +1,9 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+multiway_trade_builder/build_multiway_trade.py
+multiway_trade_builder.egg-info/PKG-INFO
+multiway_trade_builder.egg-info/SOURCES.txt
+multiway_trade_builder.egg-info/dependency_links.txt
+multiway_trade_builder.egg-info/top_level.txt

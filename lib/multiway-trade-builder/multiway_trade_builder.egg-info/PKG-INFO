@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: multiway-trade-builder
+Version: 0.0.2
+Summary: Library for constructing multiway trades as Clarity contracts.
+Home-page: https://github.com/aigorahub/multiway-trade-builder
+Author: Aigora
+Author-email: Aigora@gmail.com
+License: MIT
+Description: # Multiway-Trade-Builder
+        
+        Library for constructing multiway trades as Clarity contracts.
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Description-Content-Type: text/markdown
