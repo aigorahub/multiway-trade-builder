@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-from multiway_trade_builder import build_multiway_trade as bm
+from multiway_trade_builder import build_multiway_trade
 
 
 # # Library
@@ -196,7 +196,7 @@ inputs = jsonFile.read()
 contract_details = json.loads(inputs)
 
 # Library
-CODE = bm.build_multiway_trade(contract_details)
+CODE = build_multiway_trade(contract_details)
 
 newContract.write(CODE)
 

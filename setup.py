@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 def readme():
     with open('README.md') as f:
@@ -21,6 +21,9 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["multiway_trade_builder"],
+    packages=find_packages(),
     include_package_data=True,
+    entry_points = {
+
+    }
 )
