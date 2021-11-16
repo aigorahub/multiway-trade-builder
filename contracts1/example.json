@@ -1,0 +1,17 @@
+{
+	"ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5" : {
+		"stx" : -500,
+		"send" : [{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-c", "nft_id" : 1}],
+		"receive" : [{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-b", "nft_id" : 1}] 
+	},
+	"ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG" : {
+		"stx" : 500,
+		"send" : [{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-c", "nft_id" : 1},{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-c", "nft_id" : 2}],
+		"receive" : [] 
+	},
+	"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM" : {
+		"stx" : 0,
+		"send" : [{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-b", "nft_id" : 1}],
+		"receive" : [{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-a", "nft_id" : 1}] 
+	}
+}
