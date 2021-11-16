@@ -1,5 +1,6 @@
 import json
-from multiway_trade_builder.build_multiway_trade import build_multiway_trade
+from multiway_trade_builder import build_multiway_trade
+
 
 # Using Library function!
 
