@@ -1,0 +1,24 @@
+[project]
+name = "three-agent"
+requirements = []
+costs_version = 1
+
+[contracts.nft-trait]
+path = "contracts/nft-trait.clar"
+depends_on = []
+
+[contracts.nft-a]
+path = "contracts/nft-a.clar"
+depends_on = ["nft-trait"]
+
+[contracts.nft-b]
+path = "contracts/nft-b.clar"
+depends_on = ["nft-trait"]
+
+[contracts.nft-c]
+path = "contracts/nft-c.clar"
+depends_on = ["nft-trait"]
+
+[contracts.trade]
+path = "contracts/trade.clar"
+depends_on = ["nft-trait"]
