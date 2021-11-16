@@ -1,7 +1,6 @@
 import json
 from collections import defaultdict
 
-
 def build_multiway_trade(data):
 	##### here is where the data input gets used
 	contract_details = data
@@ -13,39 +12,52 @@ def build_multiway_trade(data):
 	agent_sign_true = "(define-data-var agent-%d-status bool true)\n"
 	agent_address = "(define-constant agent-%d '%s)\n"
 
+
 	flag = "(define-data-var flag bool false)\n\n"
-	error = "(define-constant deal-closed (err u400))\n\n"
+	deal = "(define-data-var deal bool false)\n\n"
+
+	error = "(define-constant deal-closed (err u300))\n"
+	error1 = "(define-constant cannot-escrow-nft (err u301))\n"
+	error2 = "(define-constant cannot-escrow-stx (err u302))\n"
+	error3 = "(define-constant sender-already-confirmed (err u303))\n"
+	error4 = "(define-constant non-tradable-agent (err u304))\n"
+	error5 = "(define-constant release-escrow-failed (err u305))\n\n"
+
+	contract_status_var = ";; u501 - Progress ; u502 - Cancelled ; u503 - Finished\n(define-data-var contract-status uint u501)\n\n"
 
 	param_get = " (var-get agent-%d-status)"
 	param_is_eq = " (is-eq tx-sender agent-%d)"
+
+	contract_status = "(define-read-only (check-contract-status)\n\t(ok (var-get contract-status))\n)\n\n"
 
 	check_deal = "(define-private (check-deal)\n\t(if (and%s true)\n\t\t(ok true)\n\t\t(ok false)\n\t)\n)\n\n"
 
 	check_deal_status = "(define-private (check-deal-status)\n\t(unwrap-panic\n\t\t(if (and%s)\n\t\t\tdeal-closed\n\t\t\t(ok true)\n\t\t)\n\t)\n)\n\n"
 
-	run_exchange = "(define-private (run-exchange)\n\t(begin\n%s\t\t(ok true)\n\t)\n)\n\n"
+	run_exchange = "(define-private (release-escrow)\n\t(begin\n%s\t\t(var-set deal true)\n\t\t(var-set contract-status u503)\n\t\t(ok true)\n\t)\n)\n\n"
 	run_exchange_cond_stx = "\t\t(unwrap-panic\n\t\t\t(begin\n%s\t\t\t\t(as-contract (stx-transfer? u%d tx-sender agent-%d))\n\t\t\t)\n\t\t)\n"
 	run_exchange_cond = "\t\t(unwrap-panic\n\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t)\n"
 	run_exchange_each_NFT_stx = "\t\t\t\t(unwrap-panic\n\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t)\n"
 
-	close_the_deal = "(define-private (close-the-deal)\n\t(begin\n%s\t\t(ok true)\n\t)\n)\n\n"
+	close_the_deal = "(define-private (close-the-deal)\n\t(begin\n%s\t\t(var-set contract-status u502)\n\t\t(ok true)\n\t)\n)\n\n"
 	close_the_deal_cond_stx ="\t\t(if (is-eq (var-get agent-%d-status) true)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(begin\n%s\t\t\t\t\t\t(as-contract (stx-transfer? u%d tx-sender agent-%d))\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t\t(var-set agent-%d-status false)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n"
 	close_the_deal_cond ="\t\t(if (is-eq (var-get agent-%d-status) true)\n\t\t\t(begin\n%s\t\t\t\t(var-set agent-%d-status false)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n"
 	close_the_deal_each_NFT = "\t\t\t\t(unwrap-panic\n\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t)\n"
 	close_the_deal_each_NFT_stx = "\t\t\t\t\t\t(unwrap-panic\n\t\t\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t\t\t)\n"
 
-	trade = "(define-public (trade)\n\t(begin\n%s\t)\n)\n\n"
-	trade_1 = "\t\t(unwrap-panic\n\t\t\t(begin\n%s\n\t\t\t\t(if (is-eq (var-get flag) true)\n\t\t\t\t\t(ok (var-set flag false))\n\t\t\t\t\t(ok false)\n\t\t\t\t)\n\t\t\t)\n\t\t)\n"
+	trade = "(define-public (confirm-and-escrow)\n\t(begin\n\t\t(var-set flag false)\n%s\t)\n)\n\n"
+	trade_1 = "\t\t(unwrap-panic\n\t\t\t(begin\n%s\n\t\t\t\t(ok true)\n\t\t\t)\n\t\t)\n"
 	trade_1_cond = "\t\t\t\t(if (is-eq tx-sender agent-%d)\n\t\t\t\t\t(begin\n%s\t\t\t\t\t\t(var-set agent-%d-status true)\n\t\t\t\t\t\t(var-set flag true)\n\t\t\t\t\t)\n\t\t\t\t\ttrue\n\t\t\t\t)\n"
-	trade_1_each_NFT = "\t\t\t\t\t\t(unwrap-panic\n\t\t\t\t\t\t\t(contract-call? '%s transfer u%d tx-sender (as-contract tx-sender))\n\t\t\t\t\t\t)\n"
-	trade_1_each_NFT_stx = "\n\t\t\t\t\t\t(unwrap-panic\n\t\t\t\t\t\t\t(stx-transfer? u%d tx-sender (as-contract tx-sender))\n\t\t\t\t\t\t)\n\n"
+	trade_1_confirmation = "\t\t\t\t\t\t(asserts! (is-eq (var-get agent-%d-status) false) sender-already-confirmed)\n"
+	trade_1_each_NFT = "\t\t\t\t\t\t(asserts!\n\t\t\t\t\t\t\t(is-ok (contract-call? '%s transfer u%d tx-sender (as-contract tx-sender)))\n\t\t\t\t\t\t\tcannot-escrow-nft\n\t\t\t\t\t\t)\n"
+	trade_1_each_NFT_stx = "\n\t\t\t\t\t\t(asserts!\n\t\t\t\t\t\t\t(is-ok (stx-transfer? u%d tx-sender (as-contract tx-sender)))\n\t\t\t\t\t\t\tcannot-escrow-stx\n\t\t\t\t\t\t)\n\n"
 
 	# trade_2 = "\t\t(unwrap-panic\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(contract-call? nft-address transfer tokenID tx-sender (as-contract tx-sender))\n\t\t\t\t)\n\t\t\t\t(if (is-eq stx-amount u0)\n\t\t\t\t\t(ok true)\n\t\t\t\t\t(stx-transfer? stx-amount tx-sender (as-contract tx-sender))\n\t\t\t\t)\n\t\t\t)\n\t\t)\n\n"
-	trade_3 = "\t\t(if (and%s true)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(run-exchange)\n\t\t\t\t)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n\t\t(ok true)\n"
+	trade_3 = "\t\t(if (and%s true)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(release-escrow)\n\t\t\t\t)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n\t\t(if (is-eq (var-get flag) true)\n\t\t\t(ok true)\n\t\t\tnon-tradable-agent\n\t\t)\n"
 
-	cancel = "(define-public (cancel)\n\t(begin\n\t\t(check-deal-status)\n\t\t(if (or%s)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(close-the-deal)\n\t\t\t\t)\n\t\t\t\t(ok true)\n\t\t\t)\n\t\t\t(ok false)\n\t\t)\n\t)\n)\n\n"
+	cancel = "(define-public (cancel-escrow)\n\t(begin\n\t\t(check-deal-status)\n\t\t(if (or%s)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(close-the-deal)\n\t\t\t\t)\n\t\t\t\t(ok true)\n\t\t\t)\n\t\t\t(ok false)\n\t\t)\n\t)\n)\n\n"
 
-	stx_balance = "(define-public (stx-balance (address principal))\n\t(ok (stx-get-balance address))\n)\n"
+	# stx_balance = "(define-public (stx-balance (address principal))\n\t(ok (stx-get-balance address))\n)\n"
 
 
 	var_agents = ""
@@ -70,9 +82,11 @@ def build_multiway_trade(data):
 		send_len = len(contract_details[eachDetail]["send"])
 		receive_len = len(contract_details[eachDetail]["receive"])
 
+		temp_trade_1_confirmation = trade_1_confirmation%(agent_count)
+
 		send_each_NFT = ""
 		receive_each_NFT = ""
-		temp_trade_1_each_NFT = ""
+		temp_trade_1_each_NFT = temp_trade_1_confirmation
 
 		Trade=True
 
@@ -81,7 +95,7 @@ def build_multiway_trade(data):
 		else:
 			Trade=False
 			var_agent_sign+= agent_sign_true%agent_count
-		
+
 		for send in range(send_len):
 			temp_nft_s = contract_details[eachDetail]["send"][send]
 
@@ -139,11 +153,15 @@ def build_multiway_trade(data):
 	CODE = CODE + var_agent_sign+"\n"
 
 	CODE = CODE + flag+"\n"
-	CODE = CODE + error+"\n"
+	CODE = CODE + deal+"\n"
 
+
+	CODE = CODE + error+ error1+ error2+ error3+ error4+ error5+"\n"
+
+	CODE = CODE + contract_status_var+"\n"
 
 	# Private/internal functions
-
+	CODE = CODE + contract_status
 	CODE = CODE + (check_deal%temp_param_get)
 	CODE = CODE + (check_deal_status%temp_param_get)
 	CODE = CODE + (run_exchange%temp_run_exchange)
@@ -157,6 +175,6 @@ def build_multiway_trade(data):
 	# Public functions
 	CODE = CODE + trade%temp
 	CODE = CODE +  cancel%temp_param_is_eq
-	CODE = CODE + stx_balance
+	# CODE = CODE + stx_balance
 
 	return CODE
