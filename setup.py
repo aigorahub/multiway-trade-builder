@@ -7,7 +7,7 @@ def readme():
 
 
 setup(
-    name="multiway-trade-builder",
+    name="multiway_trade_builder",
     version="0.0.2",
     description="Library for constructing multiway trades as Clarity contracts.",
     long_description=readme(),
