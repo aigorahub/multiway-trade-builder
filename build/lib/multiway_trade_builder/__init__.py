@@ -1,5 +1,4 @@
 import json
-from collections import defaultdict
 
 def build_multiway_trade(data):
 	##### here is where the data input gets used
@@ -39,7 +38,7 @@ def build_multiway_trade(data):
 	run_exchange_cond = "\t\t(unwrap-panic\n\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t)\n"
 	run_exchange_each_NFT_stx = "\t\t\t\t(unwrap-panic\n\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t)\n"
 
-	close_the_deal = "(define-private (close-the-deal)\n\t(begin\n%s\t\t(var-set contract-status u502)\n\t\t(ok true)\n\t)\n)\n\n"
+	close_the_deal = "(define-private (cancel-escrow)\n\t(begin\n%s\t\t(var-set contract-status u502)\n\t\t(ok true)\n\t)\n)\n\n"
 	close_the_deal_cond_stx ="\t\t(if (is-eq (var-get agent-%d-status) true)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(begin\n%s\t\t\t\t\t\t(as-contract (stx-transfer? u%d tx-sender agent-%d))\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t\t(var-set agent-%d-status false)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n"
 	close_the_deal_cond ="\t\t(if (is-eq (var-get agent-%d-status) true)\n\t\t\t(begin\n%s\t\t\t\t(var-set agent-%d-status false)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n"
 	close_the_deal_each_NFT = "\t\t\t\t(unwrap-panic\n\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t)\n"
@@ -55,7 +54,7 @@ def build_multiway_trade(data):
 	# trade_2 = "\t\t(unwrap-panic\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(contract-call? nft-address transfer tokenID tx-sender (as-contract tx-sender))\n\t\t\t\t)\n\t\t\t\t(if (is-eq stx-amount u0)\n\t\t\t\t\t(ok true)\n\t\t\t\t\t(stx-transfer? stx-amount tx-sender (as-contract tx-sender))\n\t\t\t\t)\n\t\t\t)\n\t\t)\n\n"
 	trade_3 = "\t\t(if (and%s true)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(release-escrow)\n\t\t\t\t)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n\t\t(if (is-eq (var-get flag) true)\n\t\t\t(ok true)\n\t\t\tnon-tradable-agent\n\t\t)\n"
 
-	cancel = "(define-public (cancel-escrow)\n\t(begin\n\t\t(check-deal-status)\n\t\t(if (or%s)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(close-the-deal)\n\t\t\t\t)\n\t\t\t\t(ok true)\n\t\t\t)\n\t\t\t(ok false)\n\t\t)\n\t)\n)\n\n"
+	cancel = "(define-public (cancel)\n\t(begin\n\t\t(check-deal-status)\n\t\t(if (or%s)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(cancel-escrow)\n\t\t\t\t)\n\t\t\t\t(ok true)\n\t\t\t)\n\t\t\t(ok false)\n\t\t)\n\t)\n)\n\n"
 
 	# stx_balance = "(define-public (stx-balance (address principal))\n\t(ok (stx-get-balance address))\n)\n"
 
