@@ -8,6 +8,8 @@
 (define-data-var agent-2-status bool false)
 (define-data-var agent-3-status bool false)
 
+
+
 (define-data-var flag bool false)
 
 
@@ -31,7 +33,7 @@
 )
 
 (define-private (check-deal)
-	(if (and (var-get agent-1-status) (var-get agent-2-status) (var-get agent-3-status) true)
+	(if (and  (var-get agent-1-status) (var-get agent-2-status) (var-get agent-3-status) true)
 		(ok true)
 		(ok false)
 	)
@@ -39,7 +41,7 @@
 
 (define-private (check-deal-status)
 	(unwrap-panic
-		(if (and (var-get agent-1-status) (var-get agent-2-status) (var-get agent-3-status))
+		(if (and  (var-get agent-1-status) (var-get agent-2-status) (var-get agent-3-status))
 			deal-closed
 			(ok true)
 		)
@@ -48,6 +50,7 @@
 
 (define-private (release-escrow)
 	(begin
+        
 		(unwrap-panic
 			(as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-b transfer u1 tx-sender agent-1))
 		)
@@ -59,14 +62,17 @@
 		(unwrap-panic
 			(as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-a transfer u1 tx-sender agent-3))
 		)
+
+
 		(var-set deal true)
 		(var-set contract-status u503)
 		(ok true)
 	)
 )
 
-(define-private (close-the-deal)
+(define-private (cancel-escrow)
 	(begin
+        
 		(if (is-eq (var-get agent-1-status) true)
 			(begin
 				(unwrap-panic
@@ -102,6 +108,8 @@
 			)
 			true
 		)
+
+
 		(var-set contract-status u502)
 		(ok true)
 	)
@@ -112,6 +120,7 @@
 		(var-set flag false)
 		(unwrap-panic
 			(begin
+
 				(if (is-eq tx-sender agent-1)
 					(begin
 						(asserts! (is-eq (var-get agent-1-status) false) sender-already-confirmed)
@@ -159,10 +168,11 @@
 					true
 				)
 
+
 				(ok true)
 			)
 		)
-		(if (and (var-get agent-1-status) (var-get agent-2-status) (var-get agent-3-status) true)
+		(if (and  (var-get agent-1-status) (var-get agent-2-status) (var-get agent-3-status) true)
 			(begin
 				(unwrap-panic
 					(release-escrow)
@@ -177,13 +187,13 @@
 	)
 )
 
-(define-public (cancel-escrow)
+(define-public (cancel)
 	(begin
 		(check-deal-status)
-		(if (or (is-eq tx-sender agent-1) (is-eq tx-sender agent-2) (is-eq tx-sender agent-3))
+		(if (or  (is-eq tx-sender agent-1) (is-eq tx-sender agent-2) (is-eq tx-sender agent-3))
 			(begin
 				(unwrap-panic
-					(close-the-deal)
+					(cancel-escrow)
 				)
 				(ok true)
 			)

@@ -14,6 +14,7 @@
 (define-map tokens-count
   principal
   uint)
+
 (define-map accounts-operator
   (tuple (operator principal) (account principal))
   (tuple (is-approved bool)))
