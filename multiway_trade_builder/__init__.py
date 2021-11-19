@@ -16,12 +16,7 @@ def build_multiway_trade(networkType, data):
 	##### here is where the data input gets used
 	contract_details = data
 
-	# templetPath = pkg_resources.resource_stream(__name__, 'templet.clar')
-	templet = read_text("multiway_trade_builder","templet.clar")
-	# print(templet)
-	# templet = templetPath.get_data()
-	CODE = templet
-	# trait = "(use-trait nft .nft-trait.nft-trait)\n\n"
+	CODE = read_text("multiway_trade_builder","templet.clar")
 
 	agent_sign_false = "(define-data-var agent-%d-status bool false)\n"
 	agent_sign_true = "(define-data-var agent-%d-status bool true)\n"
