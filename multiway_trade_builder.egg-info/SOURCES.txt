@@ -3,6 +3,7 @@ MANIFEST.in
 README.md
 setup.py
 multiway_trade_builder/__init__.py
+multiway_trade_builder/templet.clar
 multiway_trade_builder.egg-info/PKG-INFO
 multiway_trade_builder.egg-info/SOURCES.txt
 multiway_trade_builder.egg-info/dependency_links.txt

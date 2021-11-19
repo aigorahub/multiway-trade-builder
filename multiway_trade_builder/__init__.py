@@ -1,11 +1,26 @@
-import json
-templet = open("templet.clar", "r")
+from importlib import resources
+from importlib.resources import read_text
 
-def build_multiway_trade(data):
+def build_multiway_trade(networkType, data):
+
+	if networkType == "testnet":
+		network = "'ST2PABAF9FTAJYNFZH93XENAJ8FVY99RRM4DF2YCW.nft-trait.nft-trait"
+	elif networkType == "mainnet":
+		network = "'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait"
+	else:
+		errorMesg = "Error - Please Specify Correct Network!!"+"\n"
+		errorMesg += "for Mainnet pass -> mainnet"+"\n"
+		errorMesg += "for Testnet pass -> testnet"+"\n"
+		return errorMesg
+	
 	##### here is where the data input gets used
 	contract_details = data
 
-	CODE = templet.read()
+	# templetPath = pkg_resources.resource_stream(__name__, 'templet.clar')
+	templet = read_text("multiway_trade_builder","templet.clar")
+	# print(templet)
+	# templet = templetPath.get_data()
+	CODE = templet
 	# trait = "(use-trait nft .nft-trait.nft-trait)\n\n"
 
 	agent_sign_false = "(define-data-var agent-%d-status bool false)\n"
@@ -15,19 +30,19 @@ def build_multiway_trade(data):
 	param_get = " (var-get agent-%d-status)"
 	param_is_eq = " (is-eq tx-sender agent-%d)"
 
-	run_exchange_cond_stx = "\t\t(unwrap-panic\n\t\t\t(begin\n%s\t\t\t\t(as-contract (stx-transfer? u%d tx-sender agent-%d))\n\t\t\t)\n\t\t)\n"
-	run_exchange_cond = "\t\t(unwrap-panic\n\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t)\n"
-	run_exchange_each_NFT_stx = "\t\t\t\t(unwrap-panic\n\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t)\n"
+	run_exchange_cond_stx = "\t(unwrap-panic (begin\n%s\t\t(as-contract (stx-transfer? u%d tx-sender agent-%d)))\n\t)\n"
+	run_exchange_cond = "\t(unwrap-panic (as-contract (contract-call? '%s transfer u%d tx-sender agent-%d)))\n"
+	run_exchange_each_NFT_stx = "\t\t(unwrap-panic (as-contract (contract-call? '%s transfer u%d tx-sender agent-%d)))\n"
 
-	close_the_deal_cond_stx ="\t\t(if (is-eq (var-get agent-%d-status) true)\n\t\t\t(begin\n\t\t\t\t(unwrap-panic\n\t\t\t\t\t(begin\n%s\t\t\t\t\t\t(as-contract (stx-transfer? u%d tx-sender agent-%d))\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t\t(var-set agent-%d-status false)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n"
-	close_the_deal_cond ="\t\t(if (is-eq (var-get agent-%d-status) true)\n\t\t\t(begin\n%s\t\t\t\t(var-set agent-%d-status false)\n\t\t\t)\n\t\t\ttrue\n\t\t)\n"
-	close_the_deal_each_NFT = "\t\t\t\t(unwrap-panic\n\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t)\n"
-	close_the_deal_each_NFT_stx = "\t\t\t\t\t\t(unwrap-panic\n\t\t\t\t\t\t\t(as-contract (contract-call? '%s transfer u%d tx-sender agent-%d))\n\t\t\t\t\t\t)\n"
+	close_the_deal_cond_stx ="\t(if (is-eq (var-get agent-%d-status) true)\n\t(begin\n\t(unwrap-panic (begin\n%s\t\t(as-contract (stx-transfer? u%d tx-sender agent-%d)))\n\t)\n\t(var-set agent-%d-status false)\n\t)\n\ttrue\n\t)\n"
+	close_the_deal_cond ="\t(if (is-eq (var-get agent-%d-status) true)\n\t(begin\n%s\t(var-set agent-%d-status false))\n\ttrue)\n"
+	close_the_deal_each_NFT = "\t\t(unwrap-panic (as-contract (contract-call? '%s transfer u%d tx-sender agent-%d)))\n"
+	close_the_deal_each_NFT_stx = "\t\t(unwrap-panic (as-contract (contract-call? '%s transfer u%d tx-sender agent-%d)))\n"
 
-	trade_1_cond = "\t\t\t\t(if (is-eq tx-sender agent-%d)\n\t\t\t\t\t(begin\n%s\t\t\t\t\t\t(var-set agent-%d-status true)\n\t\t\t\t\t\t(var-set flag true)\n\t\t\t\t\t)\n\t\t\t\t\ttrue\n\t\t\t\t)\n"
-	trade_1_confirmation = "\t\t\t\t\t\t(asserts! (is-eq (var-get agent-%d-status) false) sender-already-confirmed)\n"
-	trade_1_each_NFT = "\t\t\t\t\t\t(asserts!\n\t\t\t\t\t\t\t(is-ok (contract-call? '%s transfer u%d tx-sender (as-contract tx-sender)))\n\t\t\t\t\t\t\tcannot-escrow-nft\n\t\t\t\t\t\t)\n"
-	trade_1_each_NFT_stx = "\n\t\t\t\t\t\t(asserts!\n\t\t\t\t\t\t\t(is-ok (stx-transfer? u%d tx-sender (as-contract tx-sender)))\n\t\t\t\t\t\t\tcannot-escrow-stx\n\t\t\t\t\t\t)\n\n"
+	trade_1_cond = "\t\t(if (is-eq tx-sender agent-%d)\n\t\t(begin\n%s\t\t(var-set agent-%d-status true)\n\t\t(var-set flag true))\n\t\ttrue)\n"
+	trade_1_confirmation = "\t\t(asserts! (is-eq (var-get agent-%d-status) false) sender-already-confirmed)\n"
+	trade_1_each_NFT = "\t\t(asserts! (is-ok (contract-call? '%s transfer u%d tx-sender (as-contract tx-sender))) cannot-escrow-nft )\n"
+	trade_1_each_NFT_stx = "\t\t(asserts! (is-ok (stx-transfer? u%d tx-sender (as-contract tx-sender))) cannot-escrow-stx )\n"
 
 	var_agents = ""
 	var_agent_sign = ""
@@ -103,14 +118,15 @@ def build_multiway_trade(data):
 		if Trade:
 			temp_trade+= trade_1_cond%(agent_count,temp_trade_1_each_NFT,agent_count)
 
-	CODE = CODE%(
-	var_agents+"\n"+var_agent_sign+"\n",
-    temp_param_get,
-    temp_param_get,
-    temp_run_exchange,
-    temp_close_the_deal,
-    temp_trade, temp_param_get,
-    temp_param_is_eq
+	CODE = CODE.format(
+		network = network,
+		agents = var_agents,
+		agents_Signature = var_agent_sign,
+		check_Agents_Signature = temp_param_get,
+		release_Transactions = temp_run_exchange,
+		cancel_Transactions = temp_close_the_deal,
+		trading_Transactions = temp_trade,
+		only_Agents = temp_param_is_eq
     )
 
 	return CODE

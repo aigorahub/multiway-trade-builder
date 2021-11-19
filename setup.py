@@ -22,8 +22,8 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     packages=find_packages(),
-    include_package_data=True,
     install_requires = [""],
+    package_data={'multiway_trade_builder': ['templet.clar']},
     entry_points = {
 
     }

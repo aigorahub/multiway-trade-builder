@@ -7,7 +7,7 @@
 	"ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG" : {
 		"stx" : 500,
 		"send" : [{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-c", "nft_id" : 1},{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-c", "nft_id" : 2}],
-		"receive" : [] 
+		"receive" : [{"nft_address":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-c", "nft_id" : 1}] 
 	},
 	"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM" : {
 		"stx" : 0,
