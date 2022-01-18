@@ -1,22 +1,22 @@
-from importlib import resources
 from importlib.resources import read_text
 
-def build_multiway_trade(networkType, data):
+def build_multiway_trade(networkType, data, comissionAddress = ""):
 
 	if networkType == "testnet":
 		network = "'ST2PABAF9FTAJYNFZH93XENAJ8FVY99RRM4DF2YCW.nft-trait.nft-trait"
 	elif networkType == "mainnet":
 		network = "'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait"
+	elif networkType == "devnet":
+		network = "'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-trait.nft-trait"
 	else:
 		errorMesg = "Error - Please Specify Correct Network!!"+"\n"
 		errorMesg += "for Mainnet pass -> mainnet"+"\n"
 		errorMesg += "for Testnet pass -> testnet"+"\n"
+		errorMesg += "for Devnet pass -> devnet"+"\n"
 		return errorMesg
 	
 	##### here is where the data input gets used
 	contract_details = data
-
-	CODE = read_text("multiway_trade_builder","templet.clar")
 
 	agent_sign_false = "(define-data-var agent-%d-status bool false)\n"
 	agent_sign_true = "(define-data-var agent-%d-status bool true)\n"
@@ -47,6 +47,8 @@ def build_multiway_trade(networkType, data):
 	temp_run_exchange = ""
 	temp_close_the_deal = ""
 	temp_trade = ""
+	
+	comission_stx = 0
 
 	agent_count = 0
 	for eachDetail in contract_details:
@@ -67,6 +69,8 @@ def build_multiway_trade(networkType, data):
 		receive_each_NFT = ""
 		temp_trade_1_each_NFT = temp_trade_1_confirmation
 
+		comission_stx -= temp_stx
+		
 		Trade=True
 
 		if send_len>0 or temp_stx<0:
@@ -111,8 +115,14 @@ def build_multiway_trade(networkType, data):
 				temp_close_the_deal+= close_the_deal_cond%(agent_count,send_each_NFT,agent_count)
 
 		if Trade:
-			temp_trade+= trade_1_cond%(agent_count,temp_trade_1_each_NFT,agent_count)
-
+			temp_trade+= trade_1_cond%(agent_count,temp_trade_1_each_NFT,agent_count)   
+	
+	if comission_stx > 0 and comissionAddress != "":
+		agent_count = 0
+		var_agents+= agent_address%(agent_count,comissionAddress)
+		temp_run_exchange+= run_exchange_cond_stx%("",comission_stx,agent_count)
+	
+	CODE = read_text("multiway_trade_builder","templet.clar")
 	CODE = CODE.format(
 		network = network,
 		agents = var_agents,
@@ -122,6 +132,6 @@ def build_multiway_trade(networkType, data):
 		cancel_Transactions = temp_close_the_deal,
 		trading_Transactions = temp_trade,
 		only_Agents = temp_param_is_eq
-    )
+	)
 
 	return CODE
