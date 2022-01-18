@@ -26,3 +26,28 @@
 (contract-call? .trade cancel-escrow)
 (contract-call? .trade confirm-and-escrow)
 (contract-call? .trade check-contract-status)
+::help
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.trade confirm-and-escrow)
+::get_assets_maps
+::set_tx_sender ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5'
+::set_tx_sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5'
+::set_tx_sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+::set_tx_sender ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.trade confirm-and-escrow)
+exit()
+exit
+q()
+q
+stop
+(contract-call? ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.trade confirm-and-escrow)
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.trade confirm-and-escrow)
+::help
+::get_assets_maps
+::set_tx_sender ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.trade confirm-and-escrow)
+::get_assets_maps
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.trade confirm-and-escrow)
+::get_assets_maps
+::set_tx_sender ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.trade confirm-and-escrow)
+::get_assets_maps

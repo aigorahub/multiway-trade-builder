@@ -1,4 +1,4 @@
-(use-trait nft 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-trait.nft-trait)
+(use-trait nft 'ST2PABAF9FTAJYNFZH93XENAJ8FVY99RRM4DF2YCW.nft-trait.nft-trait)
 
 (define-constant agent-1 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)
 (define-constant agent-2 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
@@ -33,12 +33,9 @@
 (define-private (release-escrow)
 (begin
 	(unwrap-panic (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-b transfer u1 tx-sender agent-1)))
+	(unwrap-panic (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-a transfer u1 tx-sender agent-2)))
 	(unwrap-panic (begin
-		(unwrap-panic (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.nft-a transfer u1 tx-sender agent-2)))
-		(as-contract (stx-transfer? u350 tx-sender agent-2)))
-	)
-	(unwrap-panic (begin
-		(as-contract (stx-transfer? u650 tx-sender agent-0)))
+		(as-contract (stx-transfer? u1000 tx-sender agent-0)))
 	)
 
 	(var-set deal true)
