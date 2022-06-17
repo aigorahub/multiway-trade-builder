@@ -1,0 +1,44 @@
+---
+id: 0
+name: Devnet deployment
+network: devnet
+node: "http://localhost:20443"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: auto-trade
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/auto-trade.clar
+            cost: 1350
+        - contract-publish:
+            contract-name: nft-trait
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/nft-trait.clar
+            cost: 5300
+        - contract-publish:
+            contract-name: nft-c
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/nft-c.clar
+            cost: 64340
+        - contract-publish:
+            contract-name: nft-b
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/nft-b.clar
+            cost: 65640
+        - contract-publish:
+            contract-name: nft-a
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/nft-a.clar
+            cost: 63250
+        - contract-publish:
+            contract-name: test
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/test.clar
+            cost: 11560
+        - contract-publish:
+            contract-name: trade
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/trade.clar
+            cost: 37300

@@ -2,9 +2,8 @@
 name = "clarity-multiway-trade"
 requirements = []
 costs_version = 1
-
-[contracts.nft-trait]
-path = "contracts/nft-trait.clar"
+[contracts.auto-trade]
+path = "contracts/auto-trade.clar"
 depends_on = []
 
 [contracts.nft-a]
@@ -18,6 +17,14 @@ depends_on = ["nft-trait"]
 [contracts.nft-c]
 path = "contracts/nft-c.clar"
 depends_on = ["nft-trait"]
+
+[contracts.nft-trait]
+path = "contracts/nft-trait.clar"
+depends_on = []
+
+[contracts.test]
+path = "contracts/test.clar"
+depends_on = []
 
 [contracts.trade]
 path = "contracts/trade.clar"

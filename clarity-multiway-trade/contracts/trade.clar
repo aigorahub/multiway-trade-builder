@@ -18,9 +18,11 @@
 (define-constant sender-already-confirmed (err u303))
 (define-constant non-tradable-agent (err u304))
 (define-constant release-escrow-failed (err u305))
+(define-constant deal-cancelled (err u306))
+(define-constant escrow-not-ready (err u307))
 
 
-;; u501 - Progress ; u502 - Cancelled ; u503 - Finished
+;; u501 - Progress ; u502 - Cancelled ; u503 - Finished ; u504 - Escrow Ready
 (define-data-var contract-status uint u501)
 
 
@@ -70,6 +72,8 @@
 
 (define-public (confirm-and-escrow)
 (begin
+	(asserts! (not (is-eq (var-get contract-status) u503)) deal-closed)
+	(asserts! (not (is-eq (var-get contract-status) u502)) deal-cancelled)
 	(var-set flag false)
 	(unwrap-panic (begin
 		(if (is-eq tx-sender agent-1)
@@ -88,18 +92,29 @@
 		(var-set flag true))
 		true)
 
+		
 	(ok true)))
-
-	(if (and  (var-get agent-1-status) (var-get agent-2-status) true) (begin (unwrap-panic (release-escrow))) true)
+	
+	(if (and  (var-get agent-1-status) (var-get agent-2-status) true)
+		(var-set contract-status u504)
+		true)
 	(if (is-eq (var-get flag) true) (ok true) non-tradable-agent)
 ))
 
 (define-public (cancel)
-(begin (check-deal-status)
-	(if (or  (is-eq tx-sender agent-1) (is-eq tx-sender agent-2))
+(begin
+	(if (or (is-eq tx-sender agent-1) (is-eq tx-sender agent-2))
 	(begin
 	(unwrap-panic (cancel-escrow))
 	(ok true))
-	(ok false))
+	non-tradable-agent)
 ))
 
+(define-public (complete-neoswap)
+(begin
+	(asserts! (not (is-eq (var-get contract-status) u501)) escrow-not-ready)
+	(asserts! (not (is-eq (var-get contract-status) u503)) deal-closed)
+	(asserts! (not (is-eq (var-get contract-status) u502)) deal-cancelled)
+	(unwrap-panic (release-escrow))
+	(ok true)
+))
